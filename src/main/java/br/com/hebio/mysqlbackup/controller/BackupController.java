@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,15 +22,26 @@ public class BackupController {
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String backupFileName = String.format("%s_%s.sql", database, timeStamp);
-
-        String command = String.format("mysqldump.exe -u %s -p%s %s > %s\\%s",
+        File fbackup = new File(backupDirectory + "/" + backupFileName);
+        String command = String.format("mysqldump.exe -u %s -p%s %s",
                 username, password, database, backupDirectory, backupFileName);
 
         try {
             Process process = Runtime.getRuntime().exec(command);
 
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fbackup));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                writer.write(line);
+                writer.newLine();
+            }
+            writer.close();
+
             int exitCode = process.waitFor();
 
+            System.out.println(exitCode);
             if (exitCode == 0) {
                 System.out.println("Database backup successful.");
             } else {
