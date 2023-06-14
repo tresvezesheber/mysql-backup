@@ -24,7 +24,7 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(BancoNaoEncontradoException.class)
-    public ResponseEntity<ErrorDetails> handleBancoNaoEncontradoException(ServidorNaoEncontradoException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorDetails> handleBancoNaoEncontradoException(BancoNaoEncontradoException e, HttpServletRequest request) {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setStatus(404l);
         errorDetails.setTitle("O banco não pôde ser encontrado");
