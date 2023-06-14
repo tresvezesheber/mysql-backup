@@ -14,7 +14,7 @@ import java.util.Date;
 public class BackupController {
 
     @GetMapping()
-    public static void backupMysqlDatabase() throws SQLException, ClassNotFoundException {
+    public static void backupMysqlDatabase() {
         String database = "xxxxx";
         String username = "xxxxx";
         String password = "xxxxx";
