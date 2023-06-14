@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/backup")
+@RequestMapping("/backups")
 public class BackupController {
 
     @GetMapping()

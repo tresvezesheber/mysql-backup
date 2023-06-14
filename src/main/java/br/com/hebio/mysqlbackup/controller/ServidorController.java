@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/servidor")
+@RequestMapping("/servidores")
 public class ServidorController {
 
     @Autowired

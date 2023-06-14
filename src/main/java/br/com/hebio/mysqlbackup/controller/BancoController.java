@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/banco")
+@RequestMapping("/bancos")
 public class BancoController {
 
     @Autowired
