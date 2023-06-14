@@ -1,4 +1,4 @@
-package br.com.hebio.mysqlbackup.controller;
+package br.com.hebio.mysqlbackup.resources;
 
 import br.com.hebio.mysqlbackup.model.Banco;
 import br.com.hebio.mysqlbackup.service.BancoService;

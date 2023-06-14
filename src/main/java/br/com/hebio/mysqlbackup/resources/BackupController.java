@@ -1,11 +1,10 @@
-package br.com.hebio.mysqlbackup.controller;
+package br.com.hebio.mysqlbackup.resources;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
