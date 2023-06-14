@@ -1,6 +1,7 @@
 package br.com.hebio.mysqlbackup.handler;
 
 import br.com.hebio.mysqlbackup.model.ErrorDetails;
+import br.com.hebio.mysqlbackup.service.exceptions.BancoNaoEncontradoException;
 import br.com.hebio.mysqlbackup.service.exceptions.ServidorNaoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,16 @@ public class ResourceExceptionHandler {
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setStatus(404l);
         errorDetails.setTitle("O servidor não pôde ser encontrado");
+        errorDetails.setDeveloperMessage("http://erros.mysql-backup.com.br/404");
+        errorDetails.setTimestamp(System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+    }
+
+    @ExceptionHandler(BancoNaoEncontradoException.class)
+    public ResponseEntity<ErrorDetails> handleBancoNaoEncontradoException(ServidorNaoEncontradoException e, HttpServletRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setStatus(404l);
+        errorDetails.setTitle("O banco não pôde ser encontrado");
         errorDetails.setDeveloperMessage("http://erros.mysql-backup.com.br/404");
         errorDetails.setTimestamp(System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);

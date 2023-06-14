@@ -1,6 +1,6 @@
 package br.com.hebio.mysqlbackup.service;
 
-import br.com.hebio.mysqlbackup.ServidorRepository;
+import br.com.hebio.mysqlbackup.repository.ServidorRepository;
 import br.com.hebio.mysqlbackup.model.Servidor;
 import br.com.hebio.mysqlbackup.service.exceptions.ServidorNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;

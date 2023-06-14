@@ -1,4 +1,4 @@
-package br.com.hebio.mysqlbackup;
+package br.com.hebio.mysqlbackup.repository;
 
 import br.com.hebio.mysqlbackup.model.Servidor;
 import org.springframework.data.jpa.repository.JpaRepository;
