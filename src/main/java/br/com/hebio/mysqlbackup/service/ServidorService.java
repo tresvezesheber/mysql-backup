@@ -51,7 +51,7 @@ public class ServidorService {
         servidorRepository.save(servidor);
     }
 
-    private void verificaExistencia(Servidor servidor) {
+    public void verificaExistencia(Servidor servidor) {
         buscarServidor(servidor.getId());
     }
 }
