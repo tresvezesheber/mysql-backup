@@ -28,9 +28,9 @@ public class BancoController {
         return bancoAssembler.toCollectionModel(bancoRepository.findAll());
     }
 
-    @GetMapping("/{veiculoId}")
-    public ResponseEntity<BancoOutput> buscar(@PathVariable Long veiculoId) {
-        return bancoRepository.findById(veiculoId)
+    @GetMapping("/{bancoId}")
+    public ResponseEntity<BancoOutput> buscar(@PathVariable Long bancoId) {
+        return bancoRepository.findById(bancoId)
                 .map(bancoAssembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
