@@ -1,62 +1,40 @@
 package br.com.hebio.mysqlbackup.domain.service;
 
-import br.com.hebio.mysqlbackup.model.Banco;
+import br.com.hebio.mysqlbackup.domain.exception.NegocioException;
+import br.com.hebio.mysqlbackup.domain.model.Banco;
+import br.com.hebio.mysqlbackup.domain.model.Servidor;
 import br.com.hebio.mysqlbackup.domain.repository.BancoRepository;
-import br.com.hebio.mysqlbackup.service.exceptions.BancoNaoEncontradoException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.PageRequest;
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+@AllArgsConstructor
 @Service
 public class RegistroBancoService {
 
-    @Autowired
-    private BancoRepository bancoRepository;
+    private final BancoRepository bancoRepository;
+    private final RegistroServidorService registroServidorService;
 
-    @Autowired
-    private RegistroServidorService registroServidorService;
+    public Banco buscar(Long proprietarioId) {
+        return bancoRepository.findById(proprietarioId)
+                .orElseThrow(() -> new NegocioException("Banco não encontrado"));
+    }
 
-
-    public Iterable<Banco> listaPaginadaDeBancos(Integer size) {
-        if (size == null) {
-            return bancoRepository.findAll();
-        } else {
-            PageRequest pageable = PageRequest.of(0, size);
-            return bancoRepository.findAll(pageable);
+    @Transactional
+    public Banco salvar(Banco novoBanco) {
+        if (novoBanco.getId() != null) {
+            throw new NegocioException("Banco a ser cadastrado não deve possuir um id");
         }
+
+        Servidor servidor = registroServidorService.buscar(novoBanco.getServidor().getId());
+
+        novoBanco.setServidor(servidor);
+
+        return bancoRepository.save(novoBanco);
     }
 
-    public Optional<Banco> buscarBanco(Long id) {
-        Optional<Banco> banco = bancoRepository.findById(id);
-        if (banco.isEmpty()) {
-            throw new BancoNaoEncontradoException("Banco não encontrado.");
-        }
-        return banco;
-    }
-
-    public Long salvarBanco(Banco banco) {
-        banco.setId(null);
-        registroServidorService.verificaExistencia(banco.getServidor());
-        return bancoRepository.save(banco).getId();
-    }
-
-    public void deleteBanco(Long id) {
-        try {
-            bancoRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new BancoNaoEncontradoException("Banco não encontrado.");
-        }
-    }
-
-    public void atualizarBanco(Banco banco) {
-        verificaExistencia(banco);
-        bancoRepository.save(banco);
-    }
-
-    private void verificaExistencia(Banco banco) {
-        buscarBanco(banco.getId());
+    @Transactional
+    public void excluir(Long bancoId) {
+        bancoRepository.deleteById(bancoId);
     }
 }
