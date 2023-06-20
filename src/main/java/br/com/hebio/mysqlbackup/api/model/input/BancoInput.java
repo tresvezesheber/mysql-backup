@@ -1,6 +1,5 @@
 package br.com.hebio.mysqlbackup.api.model.input;
 
-import br.com.hebio.mysqlbackup.domain.model.Servidor;
 import br.com.hebio.mysqlbackup.domain.model.TipoDeBanco;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
