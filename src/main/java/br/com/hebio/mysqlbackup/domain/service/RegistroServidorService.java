@@ -1,6 +1,6 @@
-package br.com.hebio.mysqlbackup.service;
+package br.com.hebio.mysqlbackup.domain.service;
 
-import br.com.hebio.mysqlbackup.repository.ServidorRepository;
+import br.com.hebio.mysqlbackup.domain.repository.ServidorRepository;
 import br.com.hebio.mysqlbackup.model.Servidor;
 import br.com.hebio.mysqlbackup.service.exceptions.ServidorNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class ServidorService {
+public class RegistroServidorService {
 
     @Autowired
     private ServidorRepository servidorRepository;

@@ -1,8 +1,7 @@
-package br.com.hebio.mysqlbackup.service;
+package br.com.hebio.mysqlbackup.domain.service;
 
 import br.com.hebio.mysqlbackup.model.Banco;
-import br.com.hebio.mysqlbackup.repository.BancoRepository;
-import br.com.hebio.mysqlbackup.repository.ServidorRepository;
+import br.com.hebio.mysqlbackup.domain.repository.BancoRepository;
 import br.com.hebio.mysqlbackup.service.exceptions.BancoNaoEncontradoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,13 +11,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class BancoService {
+public class RegistroBancoService {
 
     @Autowired
     private BancoRepository bancoRepository;
 
     @Autowired
-    private ServidorService servidorService;
+    private RegistroServidorService registroServidorService;
 
 
     public Iterable<Banco> listaPaginadaDeBancos(Integer size) {
@@ -40,7 +39,7 @@ public class BancoService {
 
     public Long salvarBanco(Banco banco) {
         banco.setId(null);
-        servidorService.verificaExistencia(banco.getServidor());
+        registroServidorService.verificaExistencia(banco.getServidor());
         return bancoRepository.save(banco).getId();
     }
 

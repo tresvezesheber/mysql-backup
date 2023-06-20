@@ -1,6 +1,6 @@
-package br.com.hebio.mysqlbackup.repository;
+package br.com.hebio.mysqlbackup.domain.repository;
 
-import br.com.hebio.mysqlbackup.model.Banco;
+import br.com.hebio.mysqlbackup.domain.model.Banco;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
