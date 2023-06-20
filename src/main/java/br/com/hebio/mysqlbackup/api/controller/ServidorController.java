@@ -1,5 +1,8 @@
 package br.com.hebio.mysqlbackup.api.controller;
 
+import br.com.hebio.mysqlbackup.api.assembler.ServidorAssembler;
+import br.com.hebio.mysqlbackup.api.model.ServidorOutput;
+import br.com.hebio.mysqlbackup.api.model.input.ServidorInput;
 import br.com.hebio.mysqlbackup.domain.model.Servidor;
 import br.com.hebio.mysqlbackup.domain.repository.ServidorRepository;
 import br.com.hebio.mysqlbackup.domain.service.RegistroServidorService;
@@ -16,25 +19,30 @@ import java.util.List;
 @RequestMapping("/servidores")
 public class ServidorController {
 
-    private final RegistroServidorService registroServidorService;
     private final ServidorRepository servidorRepository;
+    private final RegistroServidorService registroServidorService;
+    private final ServidorAssembler servidorAssembler;
 
     @GetMapping
-    public List<Servidor> listar() {
-        return servidorRepository.findAll();
+    public List<ServidorOutput> listar() {
+        return servidorAssembler.toCollectionModel(servidorRepository.findAll());
     }
 
     @GetMapping("/{servidorId}")
-    public ResponseEntity<Servidor> buscar(@PathVariable Long servidorId) {
+    public ResponseEntity<ServidorOutput> buscar(@PathVariable Long servidorId) {
         return servidorRepository.findById(servidorId)
+                .map(servidorAssembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Servidor adicionar(@Valid @RequestBody Servidor servidor) {
-        return registroServidorService.salvar(servidor);
+    public ServidorOutput adicionar(@Valid @RequestBody ServidorInput servidorInput) {
+        Servidor novoServidor = servidorAssembler.toEntity(servidorInput);
+        Servidor servidorCadastrado = registroServidorService.salvar(novoServidor);
+
+        return servidorAssembler.toModel(servidorCadastrado);
     }
 
     @PutMapping("/{servidorId}")

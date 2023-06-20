@@ -19,5 +19,4 @@ public class BancoOutput {
 
     private String senha;
 
-    private Servidor servidor;
 }
