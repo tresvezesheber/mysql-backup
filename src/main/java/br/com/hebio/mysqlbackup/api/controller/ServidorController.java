@@ -60,11 +60,7 @@ public class ServidorController {
 
     @DeleteMapping("/{servidorId}")
     public ResponseEntity<Void> remover(@PathVariable Long servidorId) {
-        if (!servidorRepository.existsById(servidorId)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        registroServidorService.excluir(servidorId);
+        registroServidorService.remover(servidorId);
         return ResponseEntity.noContent().build();
     }
 }

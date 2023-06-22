@@ -32,7 +32,8 @@ public class RegistroServidorService {
     }
 
     @Transactional
-    public void excluir(Long servidorId) {
+    public void remover(Long servidorId) {
+        buscar(servidorId);
         servidorRepository.deleteById(servidorId);
     }
 }
