@@ -44,4 +44,12 @@ public class BancoController {
 
         return bancoAssembler.toModel(bancoCadastrado);
     }
+
+    @DeleteMapping("/{bancoId}")
+    public ResponseEntity<Void> remover(@PathVariable Long bancoId) {
+        registroBancoService.remover(bancoId);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

@@ -15,8 +15,8 @@ public class RegistroBancoService {
     private final BancoRepository bancoRepository;
     private final RegistroServidorService registroServidorService;
 
-    public Banco buscar(Long proprietarioId) {
-        return bancoRepository.findById(proprietarioId)
+    public Banco buscar(Long bancoId) {
+        return bancoRepository.findById(bancoId)
                 .orElseThrow(() -> new NegocioException("Banco não encontrado"));
     }
 
@@ -24,6 +24,10 @@ public class RegistroBancoService {
     public Banco salvar(Banco novoBanco) {
         if (novoBanco.getId() != null) {
             throw new NegocioException("Banco a ser cadastrado não deve possuir um id");
+        }
+
+        if(bancoJaCadastrado(novoBanco)) {
+            throw new NegocioException("Já existe um banco cadastrado com esse nome");
         }
 
         Servidor servidor = registroServidorService.buscar(novoBanco.getServidor().getId());
@@ -35,6 +39,18 @@ public class RegistroBancoService {
 
     @Transactional
     public void excluir(Long bancoId) {
+        bancoRepository.deleteById(bancoId);
+    }
+
+    public boolean bancoJaCadastrado(Banco banco) {
+        return bancoRepository.findByNome(banco.getNome())
+                .filter(p -> !p.equals(banco))
+                .isPresent();
+    }
+
+    @Transactional
+    public void remover(Long bancoId) {
+        buscar(bancoId);
         bancoRepository.deleteById(bancoId);
     }
 }
