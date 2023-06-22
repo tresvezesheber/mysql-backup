@@ -1,23 +1,18 @@
 package br.com.hebio.mysqlbackup.api.model.input;
 
 import br.com.hebio.mysqlbackup.domain.model.TipoDeBanco;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class BancoInput {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include
-    private Long id;
 
     @NotBlank
     @Size(max = 50)
@@ -36,5 +31,5 @@ public class BancoInput {
 
     @Valid
     @NotNull
-    private ServidorInput servidor;
+    private ServidorIdInput servidor;
 }
