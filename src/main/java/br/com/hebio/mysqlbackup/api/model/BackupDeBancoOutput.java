@@ -10,6 +10,8 @@ import java.time.OffsetDateTime;
 @Setter
 public class BackupDeBancoOutput {
 
+    private Long id;
+
     private OffsetDateTime dataDeCriacao;
 
     @ManyToOne
