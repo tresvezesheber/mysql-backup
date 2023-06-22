@@ -7,6 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -36,4 +40,13 @@ public class Banco {
     @ManyToOne
     private Servidor servidor;
 
+    @OneToMany(mappedBy = "banco", cascade = CascadeType.ALL)
+    private List<BackupDeBanco> backups = new ArrayList<>();
+
+    public BackupDeBanco adicionarBackupDeBanco(BackupDeBanco backupDeBanco) {
+        backupDeBanco.setDataDeCriacao(OffsetDateTime.now());
+        backupDeBanco.setBanco(this);
+        getBackups().add(backupDeBanco);
+        return backupDeBanco;
+    }
 }
