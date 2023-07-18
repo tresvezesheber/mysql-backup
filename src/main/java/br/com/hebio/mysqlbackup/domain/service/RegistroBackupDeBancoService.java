@@ -44,21 +44,17 @@ public class RegistroBackupDeBancoService {
     }
 
     public void backupMysqlDatabase(Banco banco) throws SQLException, ClassNotFoundException {
-        String database = banco.getNome();
-        String username = banco.getNomeDeUsuario();
-        String password = banco.getSenha();
-        String host = banco.getServidor().getEnderecoIp();
+        String comando = criaStringDoComandoDeBackup(banco);
 
         String backupDirectory = System.getProperty("user.dir");
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String backupFileName = String.format("%s_%s.sql", database, timeStamp);
-        File fbackup = new File(backupDirectory + "/" + backupFileName);
-        String command = String.format(verficaTipoDeBanco(banco),
-                host, username, password, database, backupDirectory, backupFileName);
-        System.out.println(command);
+        String nomeDoArquivoDeBackup = criaNomeDoArquivoDeBackup(banco.getNome());
+
+        File fbackup = new File(backupDirectory + "/" + nomeDoArquivoDeBackup);
+
+        System.out.println(comando);
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            Process process = Runtime.getRuntime().exec(comando);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedWriter writer = new BufferedWriter(new FileWriter(fbackup));
@@ -85,10 +81,22 @@ public class RegistroBackupDeBancoService {
         }
     }
 
-    public String verficaTipoDeBanco(Banco banco) {
+    public String criaStringDoComandoDeBackup(Banco banco) {
+        String database = banco.getNome();
+        String username = banco.getNomeDeUsuario();
+        String password = banco.getSenha();
+        String host = banco.getServidor().getEnderecoIp();
+
         if(banco.getTipo() == TipoDeBanco.MYSQL) {
-            return "mysqldump -h %s -u %s -p%s %s";
+            return  String.format("mysqldump -h %s -u %s -p%s %s",
+                    host, username, password, database);
         }
-        return "NOT MYSQL";
+        return "";
+    }
+
+    public String criaNomeDoArquivoDeBackup(String nomeDoBanco) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String nomeDoArquivoDeBackup = String.format("%s_%s.sql", nomeDoBanco, timeStamp);
+        return nomeDoArquivoDeBackup;
     }
 }
