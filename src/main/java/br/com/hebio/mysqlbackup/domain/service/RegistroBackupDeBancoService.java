@@ -47,14 +47,16 @@ public class RegistroBackupDeBancoService {
         String database = banco.getNome();
         String username = banco.getNomeDeUsuario();
         String password = banco.getSenha();
+        String host = banco.getServidor().getEnderecoIp();
+
         String backupDirectory = System.getProperty("user.dir");
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String backupFileName = String.format("%s_%s.sql", database, timeStamp);
         File fbackup = new File(backupDirectory + "/" + backupFileName);
         String command = String.format(verficaTipoDeBanco(banco),
-                username, password, database, backupDirectory, backupFileName);
-
+                host, username, password, database, backupDirectory, backupFileName);
+        System.out.println(command);
         try {
             Process process = Runtime.getRuntime().exec(command);
 
@@ -78,13 +80,14 @@ public class RegistroBackupDeBancoService {
             }
 
         } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
             System.err.println("Error executing backup command: " + e.getMessage());
         }
     }
 
     public String verficaTipoDeBanco(Banco banco) {
         if(banco.getTipo() == TipoDeBanco.MYSQL) {
-            return "mysqldump.exe -u %s -p%s %s";
+            return "mysqldump -h %s -u %s -p%s %s";
         }
         return "NOT MYSQL";
     }
