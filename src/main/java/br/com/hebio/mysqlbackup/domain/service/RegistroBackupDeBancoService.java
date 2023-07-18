@@ -11,8 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,66 +31,52 @@ public class RegistroBackupDeBancoService {
 
     @Transactional
     public BackupDeBanco realizar(Long bancoId, BackupDeBanco backupDeBanco) {
-        Banco banco = registroBancoService.buscar(bancoId);;
-        try {
-            backupMysqlDatabase(banco);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Banco banco = registroBancoService.buscar(bancoId);
+
+        backupDatabase(banco);
+
         return banco.adicionarBackupDeBanco(backupDeBanco);
     }
 
-    public void backupMysqlDatabase(Banco banco) throws SQLException, ClassNotFoundException {
-        String comando = criaStringDoComandoDeBackup(banco);
+    public void backupDatabase(Banco banco) {
 
-        String backupDirectory = System.getProperty("user.dir");
-
-        String nomeDoArquivoDeBackup = criaNomeDoArquivoDeBackup(banco.getNome());
-
-        File fbackup = new File(backupDirectory + "/" + nomeDoArquivoDeBackup);
-
-        System.out.println(comando);
         try {
-            Process process = Runtime.getRuntime().exec(comando);
+            ProcessBuilder novoProcessoBuilder = criaProcessoBuilder(banco);
+            Process processo = novoProcessoBuilder.start();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fbackup));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                writer.write(line);
-                writer.newLine();
-            }
-            writer.close();
+            // Aguarda o término do processo
+            int exitCode = processo.waitFor();
 
-            int exitCode = process.waitFor();
-
-            System.out.println(exitCode);
             if (exitCode == 0) {
-                System.out.println("Database backup successful.");
+                System.out.println("Backup realizado com sucesso.");
             } else {
-                System.err.println("Error backing up database.");
+                System.out.println("Falha ao realizar o backup. Código de saída: " + exitCode);
             }
-
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            System.err.println("Error executing backup command: " + e.getMessage());
         }
     }
 
-    public String criaStringDoComandoDeBackup(Banco banco) {
-        String database = banco.getNome();
-        String username = banco.getNomeDeUsuario();
-        String password = banco.getSenha();
+    public ProcessBuilder criaProcessoBuilder(Banco banco) {
+        String nomeDoBanco = banco.getNome();
+        String usuario = banco.getNomeDeUsuario();
+        String senha = banco.getSenha();
         String host = banco.getServidor().getEnderecoIp();
 
-        if(banco.getTipo() == TipoDeBanco.MYSQL) {
-            return  String.format("mysqldump -h %s -u %s -p%s %s",
-                    host, username, password, database);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String caminhoDoArquivo = System.getProperty("user.dir") + "/" + criaNomeDoArquivoDeBackup(nomeDoBanco);
+
+        if (banco.getTipo() == TipoDeBanco.MYSQL) {
+            System.out.println(String.format("mysqldump -h %s -u %s -p%s %s --no-tablespaces > %s", host, usuario, senha, nomeDoBanco, caminhoDoArquivo));
+            String[] cmd = {"mysqldump", "-h", host, "-u", usuario, "-p" + senha, nomeDoBanco, "--no-tablespaces", "-r", caminhoDoArquivo};
+            processBuilder.command(cmd);
+            return processBuilder;
         }
-        return "";
+
+        String[] cmd = {"pg_dump", "-h", host, "-U", usuario, "-F", "p", "-f", caminhoDoArquivo, nomeDoBanco};
+        processBuilder.command(cmd);
+        processBuilder.environment().put("PGPASSWORD", senha);
+        return processBuilder;
     }
 
     public String criaNomeDoArquivoDeBackup(String nomeDoBanco) {
