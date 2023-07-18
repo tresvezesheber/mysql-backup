@@ -23,6 +23,10 @@ public class BancoAssembler {
         return modelMapper.map(banco, BancoOutput.class);
     }
 
+    public void copyToDomainObject(BancoInput bancoInput, Banco banco) {
+        modelMapper.map(bancoInput, banco);
+    }
+
     public List<BancoOutput> toCollectionModel(List<Banco> bancos) {
         return bancos.stream()
                 .map(this::toModel)

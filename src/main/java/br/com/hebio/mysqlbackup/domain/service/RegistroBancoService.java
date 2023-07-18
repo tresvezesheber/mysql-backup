@@ -1,11 +1,15 @@
 package br.com.hebio.mysqlbackup.domain.service;
 
+import br.com.hebio.mysqlbackup.api.assembler.BancoAssembler;
+import br.com.hebio.mysqlbackup.api.model.BancoOutput;
+import br.com.hebio.mysqlbackup.api.model.input.BancoInput;
 import br.com.hebio.mysqlbackup.domain.exception.NegocioException;
 import br.com.hebio.mysqlbackup.domain.model.Banco;
 import br.com.hebio.mysqlbackup.domain.model.Servidor;
 import br.com.hebio.mysqlbackup.domain.repository.BancoRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -14,6 +18,7 @@ public class RegistroBancoService {
 
     private final BancoRepository bancoRepository;
     private final RegistroServidorService registroServidorService;
+    private final BancoAssembler bancoAssembler;
 
     public Banco buscar(Long bancoId) {
         return bancoRepository.findById(bancoId)
@@ -26,7 +31,7 @@ public class RegistroBancoService {
             throw new NegocioException("Banco a ser cadastrado não deve possuir um id");
         }
 
-        if(bancoJaCadastrado(novoBanco)) {
+        if (bancoJaCadastrado(novoBanco)) {
             throw new NegocioException("Já existe um banco cadastrado com esse nome");
         }
 
@@ -35,6 +40,18 @@ public class RegistroBancoService {
         novoBanco.setServidor(servidor);
 
         return bancoRepository.save(novoBanco);
+    }
+
+    @Transactional
+    public BancoOutput atualizar(Long bancoId, BancoInput bancoInput) {
+        Banco bancoAtual = buscar(bancoId);
+        registroServidorService.buscar(bancoAtual.getServidor().getId());
+
+        bancoAssembler.copyToDomainObject(bancoInput, bancoAtual);
+
+        bancoAtual = bancoRepository.save(bancoAtual);
+
+        return bancoAssembler.toModel(bancoAtual);
     }
 
     @Transactional

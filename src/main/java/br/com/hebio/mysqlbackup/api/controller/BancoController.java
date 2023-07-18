@@ -4,6 +4,7 @@ import br.com.hebio.mysqlbackup.api.assembler.BancoAssembler;
 import br.com.hebio.mysqlbackup.api.model.BancoOutput;
 import br.com.hebio.mysqlbackup.api.model.input.BancoInput;
 import br.com.hebio.mysqlbackup.domain.model.Banco;
+import br.com.hebio.mysqlbackup.domain.model.Servidor;
 import br.com.hebio.mysqlbackup.domain.repository.BancoRepository;
 import br.com.hebio.mysqlbackup.domain.service.RegistroBancoService;
 import jakarta.validation.Valid;
@@ -43,6 +44,15 @@ public class BancoController {
         Banco bancoCadastrado = registroBancoService.salvar(novoBanco);
 
         return bancoAssembler.toModel(bancoCadastrado);
+    }
+
+    @PutMapping("/{bancoId}")
+    public ResponseEntity<BancoOutput> atualizar(@PathVariable Long bancoId,
+                                                 @Valid @RequestBody BancoInput bancoInput) {
+
+        BancoOutput bancoAtualizado = registroBancoService.atualizar(bancoId, bancoInput);
+
+        return ResponseEntity.ok(bancoAtualizado);
     }
 
     @DeleteMapping("/{bancoId}")
